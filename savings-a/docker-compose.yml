@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13.1
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - APP_DB_USER=docker
+      - APP_DB_PASS=docker
+      - APP_DB_NAME=kadmos_saving
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
+
+  savings-a:
+    container_name: savings-a
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    image: savings-a:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/kadmos_saving
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update

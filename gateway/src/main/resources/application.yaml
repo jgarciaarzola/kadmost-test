@@ -1,0 +1,18 @@
+zuul:
+  host:
+    connect-timeout-millis: 1000
+    socket-timeout-millis: 2000
+  routes:
+    savings_a:
+      path: /savings/a/**
+      url: http://localhost:8081/
+    savings_b:
+      path: /savings/b/**
+      url: http://localhost:8082/
+
+ribbon:
+  eureka:
+    enabled: false
+
+server:
+  port: 8080
